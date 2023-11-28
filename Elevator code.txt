@@ -1,0 +1,58 @@
+#include <Arduino.h>
+
+// Define the stepper motor pins
+const int stepPin = 8;
+const int dirPin = 9;
+
+// Define the limit switch pins
+const int topSwitchPin = 10;
+const int bottomSwitchPin = 11;
+
+// Define the elevator button pins
+const int upButtonPin = 12;
+const int downButtonPin = 13;
+
+void setup() {
+  // Set stepper motor pins as output
+  pinMode(stepPin, OUTPUT);
+  pinMode(dirPin, OUTPUT);
+
+  // Set limit switch pins as input and pull them up
+  pinMode(topSwitchPin, INPUT_PULLUP);
+  pinMode(bottomSwitchPin, INPUT_PULLUP);
+
+  // Set button pins as input and pull them up
+  pinMode(upButtonPin, INPUT_PULLUP);
+  pinMode(downButtonPin, INPUT_PULLUP);
+}
+
+void loop() {
+  // Check if the up button is pressed
+  if (digitalRead(upButtonPin) == LOW) {
+    // Move the elevator up until the top limit switch is triggered
+    while (digitalRead(topSwitchPin) == HIGH) {
+      stepMotor(1); // Move one step up
+      delay(5); // Delay between steps
+    }
+  }
+
+  // Check if the down button is pressed
+  if (digitalRead(downButtonPin) == LOW) {
+    // Move the elevator down until the bottom limit switch is triggered
+    while (digitalRead(bottomSwitchPin) == HIGH) {
+      stepMotor(-1); // Move one step down
+      delay(5); // Delay between steps
+    }
+  }
+}
+
+void stepMotor(int direction) {
+  // Set the direction of the stepper motor
+  digitalWrite(dirPin, (direction == 1) ? HIGH : LOW);
+
+  // Apply a pulse to the step pin to move the motor one step
+  digitalWrite(stepPin, HIGH);
+  delay(1);
+  digitalWrite(stepPin, LOW);
+  delay(1);
+}
